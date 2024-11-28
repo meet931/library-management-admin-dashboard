@@ -1,71 +1,126 @@
+"use client";
+import Button from "@/components/Button/Button";
+import Input from "@/components/Input/Input";
+import { loginSchema } from "@/schemas/loginSchema";
+import { setCookie } from "@/utils/functions";
+import IconService from "@/utils/icon";
+import { error } from "console";
+import { useFormik } from "formik";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 export default function Login() {
-    return (
-      <>
-        <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-          <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-            {/* <img
-              alt="Your Company"
-              src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
-              className="mx-auto h-10 w-auto"
-            /> */}
-            <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-              Sign in to Admin
-            </h2>
+  const router = useRouter();
+
+  const initialValues = {
+    email: "",
+    password: "",
+  };
+
+  const { values, errors, handleBlur, handleChange, handleSubmit, touched } =
+    useFormik({
+      initialValues,
+      validationSchema: loginSchema,
+      onSubmit: async () => {        
+        const adminData = {
+          email: "admin@gmail.com",
+          password: "Test@123",
+        };
+        try {
+          if (
+            values.email === adminData.email &&
+            values.password === adminData.password
+          ) {
+            // Save admin data to cookies
+            setCookie("adminData", JSON.stringify(adminData), 7); // Store for 7 days
+
+            // Redirect to dashboard
+            router.push("/dashboard");
+            return;
+          } else {
+            console.log("Invalid credentials")
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    });
+
+  return (
+    <>
+      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+          <div className=" flex justify-center">
+            <Image
+              src={IconService.logo_icon.src}
+              alt="Logo"
+              width={30}
+              height={30}
+            />
           </div>
-  
-          <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form action="#" method="POST" className="space-y-6">
-              <div>
-                <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
-                  Email address
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    autoComplete="email"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
-                  />
-                </div>
-              </div>
-  
-              <div>
-                <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
-                    Password
-                  </label>
-                  <div className="text-sm">
-                    <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                      Forgot password?
-                    </a>
-                  </div>
-                </div>
-                <div className="mt-2">
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    required
-                    autoComplete="current-password"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
-                  />
-                </div>
-              </div>
-  
-              <div>
-                <button
-                  type="submit"
-                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  Sign in
-                </button>
-              </div>
-            </form>            
-          </div>
+          <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+            Sign in to Admin
+          </h2>
         </div>
-      </>
-    )
-  }
-  
+
+        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <div className="mt-2">
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  labelName="Email Address"
+                  labelClassName="text-sm font-medium"
+                  value={values.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  htmlFor="email"
+                  autoComplete="email"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                  placeholder="Enter your email address"
+                  errorMessage={
+                    errors.email && touched.email ? errors.email : undefined
+                  }
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="mt-2">
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  htmlFor="password"
+                  labelName="Password"
+                  labelClassName="text-sm font-medium"
+                  autoComplete="current-password"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                  placeholder="Enter your password"
+                  errorMessage={
+                    errors.password && touched.password
+                      ? errors.password
+                      : undefined
+                  }
+                />
+              </div>
+            </div>
+
+            <div>
+              <Button
+                buttonName="Sign In"
+                type="submit"
+                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              />
+            </div>
+          </form>
+        </div>
+      </div>
+    </>
+  );
+}
