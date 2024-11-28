@@ -9,6 +9,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   disabled?: boolean;
   labelName?: string;
   labelClassName?: string;
+  htmlFor?: string;
   startIcon?: string;
   endIcon?: string;
   errorMessage?: string;
@@ -23,6 +24,7 @@ const Input: FC<InputProps> = ({
   disabled,
   labelName,
   labelClassName,
+  htmlFor,
   startIcon,
   endIcon,
   errorMessage,
@@ -32,8 +34,8 @@ const Input: FC<InputProps> = ({
     <div>
       {/* LABEL */}
       {labelName && (
-        <label
-          className={`block text-md mb-2 font-medium text-gray-900 ${labelClassName}`}
+        <label htmlFor={htmlFor}
+          className={`block text-md mb-2 font-medium text-gray-900 ${labelClassName}`}          
         >{labelName}</label>
       )}
 
@@ -52,6 +54,7 @@ const Input: FC<InputProps> = ({
           onChange={onChange}
           className={`block w-full px-3 py-2 border border-gray-300 rounded-md ${className}`}
           disabled={disabled}
+          {...props}
         />
       {/* End Icon */}
       {endIcon && (
@@ -60,7 +63,7 @@ const Input: FC<InputProps> = ({
       </div>
 
       {/* Error Message */}
-      {errorMessage && <p className="mt-1 text-sm text-red">{errorMessage}</p>}
+      {errorMessage && <p className="mt-1 text-sm text-red-500">{errorMessage}</p>}
     </div>
   );
 };
