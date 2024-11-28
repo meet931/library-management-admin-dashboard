@@ -4,13 +4,14 @@ import Input from "@/components/Input/Input";
 import { loginSchema } from "@/schemas/loginSchema";
 import { setCookie } from "@/utils/functions";
 import IconService from "@/utils/icon";
-import { error } from "console";
 import { useFormik } from "formik";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { SnackbarProvider, useSnackbar } from "notistack";
 
-export default function Login() {
+export function Login() {
   const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
 
   const initialValues = {
     email: "",
@@ -33,12 +34,16 @@ export default function Login() {
           ) {
             // Save admin data to cookies
             setCookie("adminData", JSON.stringify(adminData), 7); // Store for 7 days
+            enqueueSnackbar("Login successfully", { variant: "success" });
 
             // Redirect to dashboard
-            router.push("/dashboard");
+            setTimeout(() => {
+              router.push("/dashboard");
+            }, 2000)
             return;
           } else {
-            console.log("Invalid credentials")
+            enqueueSnackbar("Invalid credentials", { variant: "error" });
+            console.log("Invalid credentials");
           }
         } catch (error) {
           console.log(error);
@@ -122,5 +127,19 @@ export default function Login() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function LoginSnack() {
+  return (
+    <SnackbarProvider
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      maxSnack={3}
+    >
+      <Login />
+    </SnackbarProvider>
   );
 }
